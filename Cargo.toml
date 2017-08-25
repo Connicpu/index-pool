@@ -12,6 +12,11 @@ description = """
 A pool which manages allocation of unique indices. Acts like a psuedo-memory allocator.
 """
 
+[badges.appveyor]
+repository = "Connicpu/index-pool"
+branch = "master"
+service = "github"
+
 [badges.travis-ci]
 repository = "Connicpu/index-pool"
 branch = "master"
