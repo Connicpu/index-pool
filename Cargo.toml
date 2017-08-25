@@ -1,0 +1,17 @@
+[package]
+name = "index-pool"
+version = "1.0.0"
+authors = ["Connie Hilarides <conni_h@outlook.com>"]
+license = "MIT"
+repository = "https://github.com/Connicpu/index-pool"
+documentation = "https://docs.rs/index-pool"
+readme = "README.md"
+keywords = ["index", "pool", "indices", "datastructures"]
+categories = ["data-structures", "memory-management"]
+description = """
+A pool which manages allocation of unique indices. Acts like a psuedo-memory allocator.
+"""
+
+[badges.travis-ci]
+repository = "Connicpu/index-pool"
+branch = "master"
