@@ -37,6 +37,7 @@ use std::fmt;
 #[derive(Debug)]
 pub struct IndexPool {
     next_id: usize,
+    in_use: usize,
     free_list: BTreeSet<Range>,
 }
 
@@ -52,10 +53,12 @@ impl IndexPool {
     /// this as either specifying a base index for the pool, or
     /// pre-allocating the `[0..index)` range. This datastructure
     /// does not care which is your usecase, and neither has any
-    /// kind of performance penalty.
+    /// kind of performance penalty, except that `in_use()` will
+    /// include the `[0..index)` range.
     pub fn with_initial_index(index: usize) -> Self {
         IndexPool {
             next_id: index,
+            in_use: 0,
             free_list: BTreeSet::new(),
         }
     }
@@ -65,6 +68,8 @@ impl IndexPool {
     /// passed to `return_id`.
     #[inline]
     pub fn new_id(&mut self) -> usize {
+        self.in_use += 1;
+
         if let Some(first_range) = self.free_list.iter().nth(0).cloned() {
             self.free_list.remove(&first_range);
             let reduced = first_range.pop_front();
@@ -88,6 +93,8 @@ impl IndexPool {
             return Err(AlreadyReturned);
         }
 
+        self.in_use -= 1;
+
         if id + 1 == self.next_id {
             self.next_id -= 1;
         } else {
@@ -106,6 +113,12 @@ impl IndexPool {
     #[inline]
     pub fn maximum(&self) -> usize {
         self.next_id
+    }
+
+    /// Returns the number of currently in-use indices
+    #[inline]
+    pub fn in_use(&self) -> usize {
+        self.in_use
     }
 
     #[inline]
