@@ -10,5 +10,8 @@ install:
   - rustc -vV
   - cargo -vV
 
-test_script:
+build_script:
   - cargo build
+
+test_script:
+  - cargo test
