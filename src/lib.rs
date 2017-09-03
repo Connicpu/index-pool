@@ -32,6 +32,8 @@ use std::cmp::{self, Ordering};
 use std::error::Error;
 use std::fmt;
 
+pub mod iter;
+
 /// A pool which manages allocation of unique indices. Acts like a
 /// psuedo-memory allocator.
 #[derive(Debug)]
@@ -119,6 +121,10 @@ impl IndexPool {
     #[inline]
     pub fn in_use(&self) -> usize {
         self.in_use
+    }
+
+    pub fn all_indices(&self) -> iter::IndexIter {
+        iter::IndexIter::new(&self.free_list, self.next_id)
     }
 
     #[inline]
