@@ -4,6 +4,7 @@ use std::iter::Cloned;
 
 use Range;
 
+#[derive(Clone)]
 pub struct IndexIter<'a> {
     free_ranges: Cloned<BIter<'a, Range>>,
     next_range: Option<Range>,
