@@ -1,4 +1,3 @@
-use std::collections::BTreeSet;
 use std::collections::btree_set::Iter as BIter;
 use std::iter::Cloned;
 
@@ -13,8 +12,8 @@ pub struct IndexIter<'a> {
 }
 
 impl<'a> IndexIter<'a> {
-    pub(crate) fn new(free_ranges: &'a BTreeSet<Range>, end: usize) -> IndexIter<'a> {
-        let mut free_ranges = free_ranges.iter().cloned();
+    pub(crate) fn new(free_ranges: BIter<'a, Range>, end: usize) -> IndexIter<'a> {
+        let mut free_ranges = free_ranges.cloned();
         let mut first_range = free_ranges.next();
 
         let mut index = 0;
