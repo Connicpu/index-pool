@@ -1,6 +1,6 @@
 [package]
 name = "index-pool"
-version = "1.0.5"
+version = "1.0.6"
 authors = ["Connie Hilarides <conni_h@outlook.com>"]
 license = "MIT"
 repository = "https://github.com/Connicpu/index-pool"
@@ -22,4 +22,4 @@ repository = "Connicpu/index-pool"
 branch = "master"
 
 [dependencies]
-free-ranges = "0.1.3"
+free-ranges = "1.0"
