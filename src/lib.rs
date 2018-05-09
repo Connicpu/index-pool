@@ -125,7 +125,7 @@ impl IndexPool {
 
     #[inline]
     pub fn is_free(&self, id: usize) -> bool {
-        self.free_list.is_free(id)
+        id >= self.next_id || self.free_list.is_free(id)
     }
 
     /// Returns an iterator over all indices which are in use
