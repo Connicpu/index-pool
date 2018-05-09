@@ -76,20 +76,28 @@ fn basic_test() {
 #[test]
 fn allocate_specific_values() {
     let mut pool = IndexPool::new();
-    eprintln!("{:#?}", pool);
+    pool.new_id();
 
     assert!(pool.is_free(1));
-    eprintln!("{:#?}", pool);
-    assert_eq!(pool.request_id(1), Ok(()));
-    eprintln!("{:#?}", pool);
-    assert!(!pool.is_free(1));
-    eprintln!("{:#?}", pool);
-    assert_eq!(pool.request_id(5), Ok(()));
-    eprintln!("{:#?}", pool);
-    assert_eq!(pool.return_id(1), Ok(()));
-    eprintln!("{:#?}", pool);
-    assert_eq!(pool.return_id(5), Ok(()));
-    eprintln!("{:#?}", pool);
+    assert!(pool.is_free(5));
 
-    panic!();
+    assert_eq!(pool.request_id(1), Ok(()));
+
+    assert!(!pool.is_free(1));
+    assert!(pool.is_free(5));
+
+    assert_eq!(pool.request_id(5), Ok(()));
+
+    assert!(!pool.is_free(1));
+    assert!(!pool.is_free(5));
+
+    assert_eq!(pool.return_id(1), Ok(()));
+
+    assert!(pool.is_free(1));
+    assert!(!pool.is_free(5));
+
+    assert_eq!(pool.return_id(5), Ok(()));
+
+    assert!(pool.is_free(1));
+    assert!(pool.is_free(5));
 }

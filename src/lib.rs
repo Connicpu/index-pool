@@ -124,6 +124,8 @@ impl IndexPool {
             if !self.free_list.set_free(id) {
                 return Err(AlreadyReturned);
             }
+            eprintln!("{:#?}", self.free_list);
+            assert!(self.free_list.is_free(id));
         }
 
         self.in_use -= 1;
@@ -149,6 +151,7 @@ impl IndexPool {
     }
 
     #[inline]
+    /// Checks if a specific index is currently free
     pub fn is_free(&self, id: usize) -> bool {
         id >= self.next_id || self.free_list.is_free(id)
     }
