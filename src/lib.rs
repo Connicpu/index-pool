@@ -4,25 +4,25 @@
 //! ```
 //! extern crate index_pool;
 //! use index_pool::IndexPool;
-//! 
+//!
 //! fn main() {
 //!     let mut pool = IndexPool::new();
-//! 
+//!
 //!     let a = pool.new_id();
 //!     let b = pool.new_id();
 //!     let c = pool.new_id();
-//! 
+//!
 //!     let mut data = vec![""; pool.maximum()];
 //!     data[a] = "apple";
 //!     data[b] = "banana";
 //!     data[c] = "coconut";
-//! 
+//!
 //!     // Nevermind, no bananas
 //!     pool.return_id(b).unwrap();
-//! 
+//!
 //!     let p = pool.new_id();
 //!     data[p] = "pineapple";
-//! 
+//!
 //!     assert_eq!(data, vec!["apple", "pineapple", "coconut"]);
 //! }
 //! ```
@@ -34,6 +34,7 @@ use free_ranges::Range;
 
 use std::error::Error;
 use std::fmt;
+use std::usize;
 
 pub mod iter;
 
@@ -82,6 +83,30 @@ impl IndexPool {
         let id = self.next_id;
         self.next_id += 1;
         return id;
+    }
+
+    #[inline]
+    /// Attempts to allocate a specific index
+    pub fn request_id(&mut self, id: usize) -> Result<(), AlreadyInUse> {
+        assert!(id < usize::MAX);
+        if id == self.next_id {
+            self.new_id();
+            Ok(())
+        } else if id > self.next_id {
+            self.free_list.set_range_free(Range {
+                min: self.next_id,
+                max: id - 1,
+            });
+            self.next_id = id + 1;
+            self.in_use += 1;
+
+            Ok(())
+        } else if self.free_list.set_used(id) {
+            self.in_use += 1;
+            Ok(())
+        } else {
+            Err(AlreadyInUse)
+        }
     }
 
     /// Gives an Id back to the pool so that it may be handed out again.
@@ -156,7 +181,7 @@ impl Default for IndexPool {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct AlreadyReturned;
 
 impl fmt::Display for AlreadyReturned {
@@ -168,5 +193,20 @@ impl fmt::Display for AlreadyReturned {
 impl Error for AlreadyReturned {
     fn description(&self) -> &str {
         "An index was tried to be returned to the pool, but it was already marked as free."
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct AlreadyInUse;
+
+impl fmt::Display for AlreadyInUse {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str(self.description())
+    }
+}
+
+impl Error for AlreadyInUse {
+    fn description(&self) -> &str {
+        "An index was requested which was already marked as in use."
     }
 }

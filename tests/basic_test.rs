@@ -72,3 +72,24 @@ fn basic_test() {
     assert_eq!(data, vec!["apple", "pineapple", "coconut"]);
     assert!(pool.all_indices().eq([0, 1, 2].iter().cloned()));
 }
+
+#[test]
+fn allocate_specific_values() {
+    let mut pool = IndexPool::new();
+    eprintln!("{:#?}", pool);
+
+    assert!(pool.is_free(1));
+    eprintln!("{:#?}", pool);
+    assert_eq!(pool.request_id(1), Ok(()));
+    eprintln!("{:#?}", pool);
+    assert!(!pool.is_free(1));
+    eprintln!("{:#?}", pool);
+    assert_eq!(pool.request_id(5), Ok(()));
+    eprintln!("{:#?}", pool);
+    assert_eq!(pool.return_id(1), Ok(()));
+    eprintln!("{:#?}", pool);
+    assert_eq!(pool.return_id(5), Ok(()));
+    eprintln!("{:#?}", pool);
+
+    panic!();
+}
