@@ -123,6 +123,11 @@ impl IndexPool {
         self.in_use
     }
 
+    #[inline]
+    pub fn is_free(&self, id: usize) -> bool {
+        self.free_list.is_free(id)
+    }
+
     /// Returns an iterator over all indices which are in use
     #[inline]
     pub fn all_indices(&self) -> iter::IndexIter {
