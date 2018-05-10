@@ -90,7 +90,8 @@ impl IndexPool {
     pub fn request_id(&mut self, id: usize) -> Result<(), AlreadyInUse> {
         assert!(id < usize::MAX);
         if id == self.next_id {
-            self.new_id();
+            self.next_id += 1;
+            self.in_use += 1;
             Ok(())
         } else if id > self.next_id {
             self.free_list.set_range_free(Range {
@@ -124,7 +125,6 @@ impl IndexPool {
             if !self.free_list.set_free(id) {
                 return Err(AlreadyReturned);
             }
-            eprintln!("{:#?}", self.free_list);
             assert!(self.free_list.is_free(id));
         }
 
@@ -163,6 +163,11 @@ impl IndexPool {
     }
 
     #[inline]
+    pub fn all_indices_after(&self, after: usize) -> iter::IndexAfterIter {
+        iter::IndexAfterIter::new(self.free_list.free_ranges_after(after), after, self.next_id)
+    }
+
+    #[inline]
     fn collapse_next(&mut self) -> bool {
         if let Some(last_range) = self.free_list.free_ranges().rev().nth(0).cloned() {
             if last_range.max + 1 == self.next_id {
@@ -173,6 +178,13 @@ impl IndexPool {
         }
 
         false
+    }
+
+    #[inline]
+    pub fn clear(&mut self) {
+        self.free_list.clear();
+        self.in_use = 0;
+        self.next_id = 0;
     }
 }
 

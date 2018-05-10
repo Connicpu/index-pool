@@ -101,3 +101,58 @@ fn allocate_specific_values() {
     assert!(pool.is_free(1));
     assert!(pool.is_free(5));
 }
+
+#[test]
+fn all_indices() {
+    let mut pool = IndexPool::new();
+
+    pool.new_id();
+    pool.new_id();
+    pool.new_id();
+
+    let mut iter = pool.all_indices();
+    assert_eq!(iter.next(), Some(0));
+    assert_eq!(iter.next(), Some(1));
+    assert_eq!(iter.next(), Some(2));
+    assert_eq!(iter.next(), None);
+}
+
+#[test]
+fn iter_after() {
+    let mut pool = IndexPool::new();
+
+    pool.new_id();
+    pool.new_id();
+    pool.new_id();
+    pool.new_id();
+    pool.new_id();
+
+    assert_eq!(pool.request_id(7), Ok(()));
+
+    let mut iter = pool.all_indices_after(2);
+    assert_eq!(iter.next(), Some(2));
+    assert_eq!(iter.next(), Some(3));
+    assert_eq!(iter.next(), Some(4));
+    assert_eq!(iter.next(), Some(7));
+    assert_eq!(iter.next(), None);
+
+    let mut iter = pool.all_indices_after(5);
+    assert_eq!(iter.next(), Some(7));
+    assert_eq!(iter.next(), None);
+}
+
+#[test]
+fn request_sequential() {
+    let mut pool = IndexPool::new();
+
+    assert_eq!(pool.request_id(5), Ok(()));
+    assert!(!pool.is_free(5));
+    assert_eq!(pool.request_id(6), Ok(()));
+    assert!(!pool.is_free(6));
+    assert_eq!(pool.request_id(7), Ok(()));
+    assert!(!pool.is_free(7));
+    assert_eq!(pool.request_id(8), Ok(()));
+    assert!(!pool.is_free(8));
+    assert_eq!(pool.request_id(9), Ok(()));
+    assert!(!pool.is_free(9));
+}

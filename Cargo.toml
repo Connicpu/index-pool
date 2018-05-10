@@ -22,4 +22,4 @@ repository = "Connicpu/index-pool"
 branch = "master"
 
 [dependencies]
-free-ranges = "1.0.4"
+free-ranges = "1.0.6"
